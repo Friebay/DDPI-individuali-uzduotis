@@ -24,7 +24,7 @@ def process_file_stream(file_name: str, batch_size: int) -> pd.Series:
     all_orgs = []
     total_rows = 0
 
-    print(f"Failas: {file_name}, rinkinio dydis: {batch_size}.")
+    print(f"Failas: {file_name}, vieno rinkinio dydis: {batch_size}.")
 
     for batch in parquet_file.iter_batches(batch_size=batch_size, columns=["title"]):
 
@@ -54,6 +54,6 @@ if __name__ == "__main__":
 
     print(f"\nApdorota per {end_time - start_time:.2f} sek.")
     print()
-    print("Dažniau paminėtos organizacijos:")
+    print("Dažniausiai paminėtos organizacijos:")
     for org, count in org_counts.head(10).items():
         print(f"{org}: {count}")
