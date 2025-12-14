@@ -6,18 +6,6 @@ import spacy
 
 nlp = spacy.load("lt_core_news_sm")
 
-
-def extract_organizations(texts: List[str]) -> List[str]:
-    found_orgs = []
-
-    for doc in nlp.pipe(texts, disable=["parser", "tagger"]):
-        for ent in doc.ents:
-            if ent.label_ == "ORG":
-                found_orgs.append(ent.text)
-
-    return found_orgs
-
-
 def process_file_stream(file_name: str, batch_size: int) -> pd.Series:
     parquet_file = pq.ParquetFile(file_name)
 
@@ -31,7 +19,12 @@ def process_file_stream(file_name: str, batch_size: int) -> pd.Series:
         df_chunk = batch.to_pandas()
         titles = df_chunk["title"].dropna().tolist()
 
-        orgs = extract_organizations(titles)
+        orgs = []
+
+        for doc in nlp.pipe(titles, disable=["parser", "tagger"]):
+            for ent in doc.ents:
+                if ent.label_ == "ORG":
+                    orgs.append(ent.text)
 
         all_orgs.extend(orgs)
         total_rows += len(titles)
