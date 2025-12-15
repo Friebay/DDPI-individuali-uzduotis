@@ -127,6 +127,8 @@ Analizuojant efektyvumo rezultatus galime teigti, kad efektyviausiai programa ve
 
 ### MPI profiliavimas
 
+MPI profiliavimo statistikos buvo gautos naudojantis `cProfile` biblioteką. `.stats.` failai iš HPC buvo iškelti į savo virtualią aplinką naudojantis šią komandą: `scp vartotojo_vardas@login.university.lt:~/profile_rank_0.stats .`. Tuomet atsisiųsti iš serverio naudojantis šią komandą: `scp vartotojo_vardas@uosis.mif.vu.lt:~/profile_rank_0.stats .`.
+
 #### 1. Paskirstytojas
 
 | ncalls | tottime | percall | cumtime | percall | filename:lineno(function) |
