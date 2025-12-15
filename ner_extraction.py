@@ -1,12 +1,14 @@
+import cProfile
 import pandas as pd
 import pyarrow.parquet as pq
 import spacy
 from mpi4py import MPI
 import time
 
-FILE_NAME = "ccnews_LT_subset.parquet"
+FILE_NAME = "ccnews_LT_subset_1.parquet"
 BATCH_SIZE = 500
 NLP_MODEL = "lt_core_news_sm"
+
 
 def get_next_batch(parquet_iter):
     try:
@@ -14,6 +16,7 @@ def get_next_batch(parquet_iter):
         return batch.to_pandas()["title"].dropna().tolist()
     except StopIteration:
         return None
+
 
 def worker_logic(comm):
     nlp = spacy.load(NLP_MODEL)
@@ -31,6 +34,7 @@ def worker_logic(comm):
                     orgs.append(ent.text)
 
         comm.send(orgs, dest=0)
+
 
 def manager_logic(comm, size):
     parquet_file = pq.ParquetFile(FILE_NAME)
@@ -55,7 +59,7 @@ def manager_logic(comm, size):
         results_list.extend(new_results)
 
         next_batch = get_next_batch(batch_iter)
-        
+
         if next_batch:
             comm.send(next_batch, dest=sender_rank)
         else:
@@ -63,6 +67,7 @@ def manager_logic(comm, size):
             active_workers -= 1
 
     return pd.Series(results_list).value_counts()
+
 
 def process_file_stream(file_name, batch_size):
     nlp = spacy.load("lt_core_news_sm")
@@ -95,6 +100,7 @@ def process_file_stream(file_name, batch_size):
     org_series = pd.Series(all_orgs)
     return org_series.value_counts()
 
+
 def main():
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
@@ -115,15 +121,22 @@ def main():
 
     start_time = MPI.Wtime()
 
+    profiler = cProfile.Profile()
+    profiler.enable()
+
     if rank == 0:
         final_counts = manager_logic(comm, size)
-        
+
         end_time = MPI.Wtime()
         print(f"Apdorota per {end_time - start_time:.2f} sek.")
         print("Dažniausiai paminėtos organizacijos:")
         print(final_counts.head(10))
     else:
         worker_logic(comm)
+
+    profiler.disable()
+    profiler.dump_stats(f"profile_rank_{rank}.stats")
+
 
 if __name__ == "__main__":
     main()
