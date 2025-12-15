@@ -3,7 +3,6 @@ import pandas as pd
 import pyarrow.parquet as pq
 import spacy
 from mpi4py import MPI
-import time
 
 FILE_NAME = "ccnews_LT_subset_1.parquet"
 BATCH_SIZE = 500

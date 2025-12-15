@@ -22,7 +22,7 @@ Sukuriame virtualią aplinką, kad galėtume atsisiųsti reikiamas bibliotekas
 python3 -m venv ~/ner_venv
 ```
 
-Aktyvuojame sukurta aplinką
+Aktyvuojame sukurtą aplinką
 
 ```
 source ~/ner_venv/bin/activate
@@ -121,13 +121,13 @@ Programos veikimo laikas su 100 000 duomenų eilučių
 | 8 | 15,14 | 5,66 | 71 % |
 | 16 | 8,67 | 9,88 | 62 % |
 
-Galime pastebėti, kad visais atvejais vieno proceso laikas yra beveik lygus dviejų procesų laikui. Taip gavome, kadangi kuomet yra daugiau negu 1 procesas, tuomet pirmas procesas skirsto darbą, o kitas atlieką tą darbą. Rezultatuose su 1 000 duomenų eilučių matome, kad geriausi rezultatai gauti su 4 procesais ir daugiau procesų darbo nepagreitinto, kadangi su daugiau procesų duomenų dalinimas užtrunka ilgiau ir mūsų vienam procesui skirto rinkinio dydis yra 500, todėl du „darbininkai“ procesai atlieka visą darbą, o kiti negavus darbo yra išjungiami. Iš laiko duomenų su 100 000 eilučių matome, kad lygiagretinimas geriausiai veikia su daug duomenų, kadangi šiame bandyme didinant procesų skaičių dvigubai - programos veikimo laikas sumažėja beveik proporcingai.
+Galime pastebėti, kad visais atvejais vieno proceso laikas yra beveik lygus dviejų procesų laikui. Taip gavome, kadangi kuomet yra daugiau negu 1 procesas, tuomet pirmas procesas skirsto darbą, o kitas atlieka tą darbą. Rezultatuose su 1 000 duomenų eilučių matome, kad geriausi rezultatai gauti su 4 procesais ir daugiau procesų darbo nepagreitinto, kadangi su daugiau procesų duomenų dalinimas užtrunka ilgiau ir mūsų vienam procesui skirto rinkinio dydis yra 500, todėl du „darbininkai“ procesai atlieka visą darbą, o kiti, negavę darbo, yra išjungiami. Iš laiko duomenų su 100 000 eilučių matome, kad lygiagretinimas geriausiai veikia su daug duomenų, kadangi šiame bandyme didinant procesų skaičių dvigubai - programos veikimo laikas sumažėja beveik proporcingai.
 
 Analizuojant efektyvumo rezultatus galime teigti, kad efektyviausiai programa veikė su vienu procesu. Tačiau jeigu norime spartesnio veikimo, tuomet reikia atsižvelgti į duomenų kiekį, kadangi priklausomai nuo duomenų kiekio priklausys procesų skaičius, pavyzdžiui su 100 000 duomenų eilučių lygiagretumas efektyviausias buvo su 8 procesais, o su 10 000 duomenų eilučių - su 4 procesais.
 
 ### MPI profiliavimas
 
-MPI profiliavimo statistikos buvo gautos naudojantis `cProfile` biblioteką. `.stats.` failai iš HPC buvo iškelti į savo virtualią aplinką naudojantis šią komandą: `scp vartotojo_vardas@login.university.lt:~/profile_rank_0.stats .`. Tuomet atsisiųsti iš serverio naudojantis šią komandą: `scp vartotojo_vardas@uosis.mif.vu.lt:~/profile_rank_0.stats .`.
+MPI profiliavimo statistikos buvo gautos naudojantis `cProfile` biblioteka. `.stats.` failai iš HPC buvo iškelti į savo virtualią aplinką naudojantis šią komandą: `scp vartotojo_vardas@login.university.lt:~/profile_rank_0.stats .`. Tuomet atsisiųsti iš serverio naudojantis šią komandą: `scp vartotojo_vardas@uosis.mif.vu.lt:~/profile_rank_0.stats .`.
 
 #### 1. Paskirstytojas
 
