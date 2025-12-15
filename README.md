@@ -91,33 +91,33 @@ wget https://github.com/Friebay/DDPI-individuali-uzduotis/raw/refs/heads/main/cc
 
 Programos veikimo laikas su 1 000 duomenų eilučių
 
-| Procesų skaičius | Laikas (sek.) |
-| :---: | :---: |
-| 1 | 1,37 |
-| 2 | 1,40 |
-| 4 | 0,95 |
-| 8 | 0,99 |
-| 16 | 1,08 |
+| Procesų skaičius | Laikas (sek.) | Pagreitėjimas | Efektyvumas |
+| :---: | :---: | :---: | :---: |
+| 1 | 1,37 | 1,00 | 100 % |
+| 2 | 1,40 | 0,98 | 49 % |
+| 4 | 0,95 | 1,44 | 36 % |
+| 8 | 0,99 | 1,38 | 17 % |
+| 16 | 1,08 | 1,27 | 8 % |
 
 Programos veikimo laikas su 10 000 duomenų eilučių
 
-| Procesų skaičius | Laikas (sek.) |
-| :---: | :---: |
-| 1 | 9,57 |
-| 2 | 9,23 |
-| 4 | 4,03 |
-| 8 | 2,09 |
-| 16 | 1,65 |
+| Procesų skaičius | Laikas (sek.) | Pagreitėjimas | Efektyvumas |
+| :---: | :---: | :---: | :---: |
+| 1 | 9,57 | 1,00 | 100 % |
+| 2 | 9,23 | 1,04 | 52 % |
+| 4 | 4,03 | 2,37 | 59 % |
+| 8 | 2,09 | 4,58 | 57 % |
+| 16 | 1,65 | 5,8 | 36 % |
 
 Programos veikimo laikas su 100 000 duomenų eilučių
 
-| Procesų skaičius | Laikas (sek.) |
-| :---: | :---: |
-| 1 | 85,63 |
-| 2 | 85,03 |
-| 4 | 31,58 |
-| 8 | 15,14 |
-| 16 | 8,67 |
+| Procesų skaičius | Laikas (sek.) | Pagreitėjimas | Efektyvumas |
+| :---: | :---: | :---: | :---: |
+| 1 | 85,63 | 1,00 | 100 % |
+| 2 | 85,03 | 1,01 | 50 % |
+| 4 | 31,58 | 2,71 | 68 % |
+| 8 | 15,14 | 5,66 | 71 % |
+| 16 | 8,67 | 9,88 | 62 % |
 
 Galime pastebėti, kad visais atvejais vieno proceso laikas yra beveik lygus dviejų procesų laikui. Taip gavome, kadangi kuomet yra daugiau negu 1 procesas, tuomet pirmas procesas skirsto darbą, o kitas atlieką tą darbą. Rezultatuose su 1 000 duomenų eilučių matome, kad geriausi rezultatai gauti su 4 procesais ir daugiau procesų darbo nepagreitinto, kadangi su daugiau procesų duomenų dalinimas užtrunka ilgiau ir mūsų vienam procesui skirto rinkinio dydis yra 500, todėl du „darbininkai“ procesai atlieka visą darbą, o kiti negavus darbo yra išjungiami. Iš laiko duomenų su 100 000 eilučių matome, kad lygiagretinimas geriausiai veikia su daug duomenų, kadangi šiame bandyme didinant procesų skaičių dvigubai - programos veikimo laikas sumažėja beveik proporcingai.
 
