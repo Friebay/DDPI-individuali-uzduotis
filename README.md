@@ -1,4 +1,4 @@
-# Organizacijų pavadinimų paieška lietuviškuose naujienų straipsnių antraštėse
+# Organizacijų pavadinimų paieška lietuviškų naujienų straipsnių antraštėse
 
 ## Tikslas, problema ir uždaviniai
 Tikslas: panaudoti paskirstytų skaičiavimų tinklą ir `mpi4py` sprendžiant įvardytų esybių atpažinimo uždavinį.
@@ -7,7 +7,7 @@ Problema: įvardytų esybių atpažinimas užtrunka ilgai, kai naudojame tik vie
 
 Uždaviniai:
 1. Susirasti užduoties tikslui tinkamus duomenis;
-2. Sukurti Python programą, kuri teisingai apdoroja rastus duomenis;
+2. Sukurti Python programą, kuri teisingai apdoroja rastus duomenis naudojant lygiagretinimą;
 3. Palyginti programos veikimo laiką, kai naudojamas skirtingas procesų skaičius. 
 
 ## Duomenys
@@ -40,7 +40,7 @@ Atsisiunčiame lietuvišką spaCy modelį
 python -m spacy download lt_core_news_sm
 ```
 
-## submit.sh failas
+## `submit.sh` failas
 
 Sukuriame `submit.sh` failą
 
@@ -119,10 +119,11 @@ Programos veikimo laikas su 100 000 duomenų eilučių
 | 8 | 15,14 |
 | 16 | 8,67 |
 
-Galime pastebėti, kad visais atvejais 1 proceso laikas yra beveik lygus dviejų procesų laikui. Taip gavome, kadangi kuomet yra daugiau negu 1 procesas, tuomet 1 procesas skirsto darbą, o kitas atlieką tą darbą. Rezultatuose su 1 000 duomenų eilučių matome, kad geriausi rezultatai gauti su 4 procesais ir daugiau procesų darbo nepagreitinto, kadangi su daugiau procesų duomenų dalinimas užtrunka ilgiau ir mūsų vienam procesui skirto rinkinio dydis yra 500, todėl du „darbininkai“ procesai atlieka visą darbą, o kiti negavus darbo yra išjungiami. Iš laiko duomenų su 100 000 eilučių matome, kad lygiagretinimas geriausiai veikia su daug duomenų, kadangi šiame bandyme didinant procesų skaičių dvigubai - programos veikimo laikas sumažėja beveik proporcingai.
+Galime pastebėti, kad visais atvejais vieno proceso laikas yra beveik lygus dviejų procesų laikui. Taip gavome, kadangi kuomet yra daugiau negu 1 procesas, tuomet pirmas procesas skirsto darbą, o kitas atlieką tą darbą. Rezultatuose su 1 000 duomenų eilučių matome, kad geriausi rezultatai gauti su 4 procesais ir daugiau procesų darbo nepagreitinto, kadangi su daugiau procesų duomenų dalinimas užtrunka ilgiau ir mūsų vienam procesui skirto rinkinio dydis yra 500, todėl du „darbininkai“ procesai atlieka visą darbą, o kiti negavus darbo yra išjungiami. Iš laiko duomenų su 100 000 eilučių matome, kad lygiagretinimas geriausiai veikia su daug duomenų, kadangi šiame bandyme didinant procesų skaičių dvigubai - programos veikimo laikas sumažėja beveik proporcingai.
 
 ## Šaltiniai
 1. https://huggingface.co/datasets/Friebay/ccnews-LT
 2. https://spacy.io/models/lt/
 3. https://mif.vu.lt/itwiki/hpc
+4. https://emokymai.vu.lt/mod/assign/view.php?id=111949
 4. https://aistudio.google.com/

@@ -1,12 +1,72 @@
-import time
-from typing import List
 import pandas as pd
 import pyarrow.parquet as pq
 import spacy
+from mpi4py import MPI
+import time
 
-nlp = spacy.load("lt_core_news_sm")
+FILE_NAME = "ccnews_LT_subset.parquet"
+BATCH_SIZE = 500
+NLP_MODEL = "lt_core_news_sm"
 
-def process_file_stream(file_name: str, batch_size: int) -> pd.Series:
+def get_next_batch(parquet_iter):
+    try:
+        batch = next(parquet_iter)
+        return batch.to_pandas()["title"].dropna().tolist()
+    except StopIteration:
+        return None
+
+def worker_logic(comm):
+    nlp = spacy.load(NLP_MODEL)
+
+    while True:
+        titles = comm.recv(source=0)
+
+        if titles is None:
+            break
+
+        orgs = []
+        for doc in nlp.pipe(titles, disable=["parser", "tagger"]):
+            for ent in doc.ents:
+                if ent.label_ == "ORG":
+                    orgs.append(ent.text)
+
+        comm.send(orgs, dest=0)
+
+def manager_logic(comm, size):
+    parquet_file = pq.ParquetFile(FILE_NAME)
+    batch_iter = parquet_file.iter_batches(batch_size=BATCH_SIZE, columns=["title"])
+
+    results_list = []
+    active_workers = 0
+    status = MPI.Status()
+
+    for i in range(1, size):
+        batch = get_next_batch(batch_iter)
+        if batch:
+            comm.send(batch, dest=i)
+            active_workers += 1
+        else:
+            comm.send(None, dest=i)
+
+    while active_workers > 0:
+        new_results = comm.recv(source=MPI.ANY_SOURCE, status=status)
+        sender_rank = status.Get_source()
+
+        results_list.extend(new_results)
+
+        next_batch = get_next_batch(batch_iter)
+        
+        if next_batch:
+            comm.send(next_batch, dest=sender_rank)
+        else:
+            comm.send(None, dest=sender_rank)
+            active_workers -= 1
+
+    return pd.Series(results_list).value_counts()
+
+def process_file_stream(file_name, batch_size):
+    nlp = spacy.load("lt_core_news_sm")
+
     parquet_file = pq.ParquetFile(file_name)
 
     all_orgs = []
@@ -35,18 +95,35 @@ def process_file_stream(file_name: str, batch_size: int) -> pd.Series:
     org_series = pd.Series(all_orgs)
     return org_series.value_counts()
 
+def main():
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    size = comm.Get_size()
+
+    if size < 2:
+        start_time = MPI.Wtime()
+
+        final_counts = process_file_stream(FILE_NAME, BATCH_SIZE)
+
+        end_time = MPI.Wtime()
+
+        print(f"Apdorota per {end_time - start_time:.2f} sek.")
+        print("Dažniausiai paminėtos organizacijos:")
+        print(final_counts.head(10))
+
+        return
+
+    start_time = MPI.Wtime()
+
+    if rank == 0:
+        final_counts = manager_logic(comm, size)
+        
+        end_time = MPI.Wtime()
+        print(f"Apdorota per {end_time - start_time:.2f} sek.")
+        print("Dažniausiai paminėtos organizacijos:")
+        print(final_counts.head(10))
+    else:
+        worker_logic(comm)
 
 if __name__ == "__main__":
-    FILE_NAME = "ccnews_LT_subset.parquet"
-
-    start_time = time.time()
-
-    org_counts = process_file_stream(FILE_NAME, batch_size=500)
-
-    end_time = time.time()
-
-    print(f"\nApdorota per {end_time - start_time:.2f} sek.")
-    print()
-    print("Dažniausiai paminėtos organizacijos:")
-    for org, count in org_counts.head(10).items():
-        print(f"{org}: {count}")
+    main()
